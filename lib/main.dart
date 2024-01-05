@@ -1,3 +1,4 @@
+import 'package:flutter_application_1/data/task_inherited.dart';
 import 'package:flutter_application_1/screens/form_screen.dart';
 
 import 'screens/tela_inicial.dart';
@@ -24,7 +25,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: FormScreen(),
+      home: TaskInherited(child: const InitialScreen()),
     );
   }
 }

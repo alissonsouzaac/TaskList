@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/components/tasks.dart';
+import 'package:flutter_application_1/data/task_dao.dart';
+import 'package:flutter_application_1/data/task_inherited.dart';
 
 class FormScreen extends StatefulWidget {
-  const FormScreen({Key? key}) : super(key: key);
+  const FormScreen({Key? key, required this.taskContext}) : super(key: key);
+
+  final BuildContext taskContext;
 
   @override
   _FormScreenState createState() => _FormScreenState();
@@ -13,6 +18,22 @@ class _FormScreenState extends State<FormScreen> {
   TextEditingController imageController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+
+  bool valueValidator(String? value) {
+    if (value != null && value.isEmpty) {
+      return true;
+    }
+    return false;
+  }
+
+  bool difficultyValidator(String? value) {
+    if (value != null && value.isEmpty) {
+      if (int.parse(value) > 5 || int.parse(value) < 1) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +60,7 @@ class _FormScreenState extends State<FormScreen> {
                         padding: const EdgeInsets.all(8.0),
                         child: TextFormField(
                           validator: (String? value) {
-                            if (value != null && value.isEmpty) {
+                            if (valueValidator(value)) {
                               return 'Insira o nome da tarefa';
                             }
                             return null;
@@ -57,9 +78,7 @@ class _FormScreenState extends State<FormScreen> {
                         padding: const EdgeInsets.all(8.0),
                         child: TextFormField(
                           validator: (value) {
-                            if (value!.isEmpty ||
-                                int.parse(value) > 5 ||
-                                int.parse(value) < 1) {
+                            if (difficultyValidator(value)) {
                               return 'Insira uma dificuldade valida';
                             }
                             return null;
@@ -81,7 +100,7 @@ class _FormScreenState extends State<FormScreen> {
                             setState(() {});
                           },
                           validator: (String? value) {
-                            if (value!.isEmpty) {
+                            if (valueValidator(value)) {
                               return 'Insira uma imagem para a tarefa';
                             }
                             return null;
@@ -118,12 +137,22 @@ class _FormScreenState extends State<FormScreen> {
                       ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              print(nameController.text);
-                              print(int.parse(dificultyController.text));
-                              print(imageController.text);
+                              // print(nameController.text);
+                              // print(int.parse(dificultyController.text));
+                              // print(imageController.text);
+                              TaskDao().save(Tasks(
+                                  nameController.text,
+                                  imageController.text,
+                                  int.parse(dificultyController.text)));
+                              /*TaskInherited.of(widget.taskContext)!.newTask(
+                                  nameController.text,
+                                  imageController.text,
+                                  int.parse(dificultyController.text));*/
                               ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                      content: Text('Salvando nova tarefa')));
+                                      content:
+                                          Text('Criando uma nova tarefa')));
+                              Navigator.pop(context);
                             }
                           },
                           child: Text('Adicionar!'))
